@@ -16,14 +16,15 @@ private:
 
 protected:
 	/*protected member variable and function definitions. */
-	int level_max[DIMENSION],level_min[DIMENSION];
-	int _Npoints[DIMENSION];
+
 
 public:
 	/*public member variable and function definitions. */
 	Fullgrid _grid_l1 , _grid_l2 , _grid_lmin;
 	Fullgrid _grid_l1_interpolated , _grid_l2_interpolated , _grid_lmin_interpolated;
 	Fullgrid _grid_combination;
+	int level_max[DIMENSION],level_min[DIMENSION];
+	int _Npoints[DIMENSION];
 
 	/** Constructor for the Combination */
 	Combination(int* level_1,int* level_2,int* _level_max, int* _level_min, Domain domain)

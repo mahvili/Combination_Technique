@@ -1,21 +1,17 @@
 #ifndef FULLGRID_H
 #define FULLGRID_H
 
-#include "Definitions.h"
+#include "Domain.h"
+#include "TestFunction.h"
 /*here Full grid structure will be build*/
 
 class Fullgrid {
-protected:
-	/*protected member variable and function definitions. */
-
-
-
 public:
 	/*public member variable and function definitions. */
 	int _Npoints[DIMENSION];
-	FLOAT _mesh_size[DIMENSION];
-	FLOAT** function_values;
-	FLOAT *position_d1, *position_d2;
+	double _mesh_size[DIMENSION];
+	double** function_values;
+	double *position_d1, *position_d2;
 
 	/** Default constructor for the fullgrid
 	 */
@@ -24,18 +20,73 @@ public:
 			_Npoints[i]=(pow(2,level[i]))+1;	//2^l+1
 			_mesh_size[i]= (_domain.end_point[i] - _domain.start_point[i]) / (pow(2,level[i]) );	//2^-l
 		}
-		position_d1 = new FLOAT[ _Npoints[0] ];
-		position_d2 = new FLOAT[ _Npoints[1] ];
+		position_d1 = new double[ _Npoints[0] ];
+		position_d2 = new double[ _Npoints[1] ];
 		//Assign first dimension
-		function_values = new FLOAT*[_Npoints[0]];
+		function_values = new double*[_Npoints[0]];
 		//Assign second dimension
 		for(int i = 0; i <_Npoints[0] ; i++){
-			function_values[i] = new FLOAT[_Npoints[1]];
+			function_values[i] = new double[_Npoints[1]];
 		}
 	}
 
+	//copy constructor
+	Fullgrid(const Fullgrid& _copyfromfullgrid) {
+		for ( int i = 0; i < DIMENSION; ++i ) {
+			_Npoints[i]=_copyfromfullgrid._Npoints[i];	//2^l+1
+			_mesh_size[i]= _copyfromfullgrid._mesh_size[i];
+		}
+		position_d1 = new double[ _Npoints[0] ];
+		position_d2 = new double[ _Npoints[1] ];
+		function_values = new double*[_Npoints[0]];
+		for(int i = 0; i <_Npoints[0] ; i++){
+			function_values[i] = new double[_Npoints[1]];
+		}
+		for ( int j_1 = 0; j_1 < _Npoints[0]; ++j_1 ) {
+			position_d1[j_1]=_copyfromfullgrid.position_d1[j_1];
+		}
+		for ( int j_2 = 0; j_2 < _Npoints[1]; ++j_2 ) {
+			position_d2[j_2]=_copyfromfullgrid.position_d2[j_2];
+		}
+		//		**(_array) = new double[index_size_global]();  ///Zero-initialize (somehow doesn't work here)
+		for ( int i = 0; i < _Npoints[0]; ++i ) {
+			for ( int j = 0; j < _Npoints[1]; ++j ) {
+				function_values[i][j]= _copyfromfullgrid.function_values[i][j];  //X^2*Y^2 - TASK (implement new function to do here)
+			}
+		}
+
+	}
+
 	//Assignment operator
-	Fullgrid& operator=(const Fullgrid& fullgrid);
+	Fullgrid& operator=(const Fullgrid& _equalfullgrid){
+		if (this!=&_equalfullgrid){
+			for ( int i = 0; i < DIMENSION; ++i ) {
+				_Npoints[i]=_equalfullgrid._Npoints[i];	//2^l+1
+				_mesh_size[i]= _equalfullgrid._mesh_size[i];
+			}
+			position_d1 = new double[ _Npoints[0] ];
+			position_d2 = new double[ _Npoints[1] ];
+			function_values = new double*[_Npoints[0]];
+			//Assign second dimension
+			for(int i = 0; i <_Npoints[0] ; i++){
+				function_values[i] = new double[_Npoints[1]];
+			}
+
+			for ( int j_1 = 0; j_1 < _Npoints[0]; ++j_1 ) {
+				position_d1[j_1]=_equalfullgrid.position_d1[j_1];
+			}
+			for ( int j_2 = 0; j_2 < _Npoints[1]; ++j_2 ) {
+				position_d2[j_2]=_equalfullgrid.position_d2[j_2];
+			}
+			//		**(_array) = new double[index_size_global]();  ///Zero-initialize (somehow doesn't work here)
+			for ( int i = 0; i < _Npoints[0]; ++i ) {
+				for ( int j = 0; j < _Npoints[1]; ++j ) {
+					function_values[i][j]= _equalfullgrid.function_values[i][j];  //X^2*Y^2 - TASK (implement new function to do here)
+				}
+			}
+		}
+		return *this;
+	}
 
 	/** Destructor Deallocates the data
 	 * TASK
@@ -48,16 +99,17 @@ public:
 
 	/*evaluates function value for Gaussian case X^2*Y^2*/
 	void evaluate(Domain _domain){
+
 		for ( int j_1 = 0; j_1 < _Npoints[0]; ++j_1 ) {
 			position_d1[j_1]=_domain.start_point[0]+j_1*_mesh_size[0];
 		}
 		for ( int j_2 = 0; j_2 < _Npoints[1]; ++j_2 ) {
 			position_d2[j_2]=_domain.start_point[1]+j_2*_mesh_size[1];
 		}
-		//		**(_array) = new FLOAT[index_size_global]();  ///Zero-initialize (somehow doesn't work here)
+		//		**(_array) = new double[index_size_global]();  ///Zero-initialize (somehow doesn't work here)
 		for ( int i = 0; i < _Npoints[0]; ++i ) {
 			for ( int j = 0; j < _Npoints[1]; ++j ) {
-				function_values[i][j]= position_d1[i]*position_d1[i]*position_d2[j]*position_d2[j];  //X^2*Y^2
+				function_values[i][j]= TestFunction(position_d1[i],position_d2[j]);  //X^2*Y^2 - TASK (implement new function to do here)
 			}
 		}
 	}
@@ -82,6 +134,7 @@ public:
 		return mapped_index;
 	}
 	 */
+private:
 
 };
 

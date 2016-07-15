@@ -39,30 +39,20 @@ int main( int argc, char *argv[] ) {
 		level_min[i]=(level_1[i]<level_2[i]) ? level_1[i] : level_2[i];
 	}
 
-	//Regular fullgrid
+	//Regular Fullgrid
 	Fullgrid* _fullgrid = new Fullgrid(level_max, domain);
 	_fullgrid->evaluate(domain);
-	Combination* _combinationSolution= new Combination(level_1,level_2,level_max,level_min, domain);
-
 	//outputs before combination
 	write_vtkFile("fullgrid_noCombi", domain.end_point[0]-domain.start_point[0],domain.end_point[1]-domain.start_point[1],_fullgrid->_Npoints[0]-1,_fullgrid->_Npoints[1]-1,_fullgrid->_mesh_size[0],_fullgrid->_mesh_size[1], _fullgrid->function_values);
-	printf ("%s \n", "before combi!");
+	printf ("%s \n", "before combination!");
+
 	//using combination technique
-
-	write_vtkFile("l1_noCombi", domain.end_point[0]-domain.start_point[0],domain.end_point[1]-domain.start_point[1],_combinationSolution->_grid_l1._Npoints[0]-1,_combinationSolution->_grid_l1._Npoints[1]-1,_combinationSolution->_grid_l1._mesh_size[0],_combinationSolution->_grid_l1._mesh_size[1], _combinationSolution->_grid_l1.function_values);
-	printf ("%s \n", "vtk l1 done!");
-	write_vtkFile("l2_noCombi", domain.end_point[0]-domain.start_point[0],domain.end_point[1]-domain.start_point[1],_combinationSolution->_grid_l2._Npoints[0]-1,_combinationSolution->_grid_l2._Npoints[1]-1,_combinationSolution->_grid_l2._mesh_size[0],_combinationSolution->_grid_l2._mesh_size[1], _combinationSolution->_grid_l2.function_values);
-	printf ("%s \n", "vtk l2 done!");
-	write_vtkFile("lmin_noCombi", domain.end_point[0]-domain.start_point[0],domain.end_point[1]-domain.start_point[1],_combinationSolution->_grid_lmin._Npoints[0]-1,_combinationSolution->_grid_lmin._Npoints[1]-1,_combinationSolution->_grid_lmin._mesh_size[0],_combinationSolution->_grid_lmin._mesh_size[1], _combinationSolution->_grid_lmin.function_values);
-	printf ("%s \n", "vtk lmin done!");
-	printf ("%s \n", "before getcombi!");
-
-
-
+	Combination* _combinationSolution= new Combination(level_1,level_2,level_max,level_min, domain);
 	_combinationSolution->GetCombination(level_1,level_2, domain);
-
-	printf ("%s \n", "before VTK!");
 	write_vtkFile("fullgrid_Combi", domain.end_point[0]-domain.start_point[0],domain.end_point[1]-domain.start_point[1],_fullgrid->_Npoints[0]-1,_fullgrid->_Npoints[1]-1,_fullgrid->_mesh_size[0],_fullgrid->_mesh_size[1], _combinationSolution->_grid_combination.function_values);
+	printf ("%s \n", "after combination!");
+
+
 	//plot the difference
 	int _Npoints[DIMENSION];
 	for ( int i = 0; i < DIMENSION; ++i ) {
@@ -75,6 +65,39 @@ int main( int argc, char *argv[] ) {
 		}
 	}
 	write_vtkFile("fullgrid_difference", domain.end_point[0]-domain.start_point[0],domain.end_point[1]-domain.start_point[1],_fullgrid->_Npoints[0]-1,_fullgrid->_Npoints[1]-1,_fullgrid->_mesh_size[0],_fullgrid->_mesh_size[1], _difference_grid->function_values);
+	printf ("%s \n", "after difference!");
+
+	//higher resolution test
+	Domain new_domain;
+	new_domain.start_point[0]=0.0;
+	new_domain.start_point[1]=0.0;
+	new_domain.end_point[0]=0.5;
+	new_domain.end_point[1]=0.5;
+
+	Fullgrid* new_fullgrid = new Fullgrid(level_max, new_domain);
+	new_fullgrid->evaluate(new_domain);
+	//outputs before combination
+	write_vtkFile("fullgrid_highernoCombi", new_domain.end_point[0]-new_domain.start_point[0],new_domain.end_point[1]-new_domain.start_point[1],new_fullgrid->_Npoints[0]-1,new_fullgrid->_Npoints[1]-1,new_fullgrid->_mesh_size[0],new_fullgrid->_mesh_size[1], new_fullgrid->function_values);
+	printf ("%s \n", "before higher resolution combination!");
+	//using combination technique
+	Combination* new_combinationSolution= new Combination(level_1,level_2,level_max,level_min, new_domain);
+	new_combinationSolution->GetCombination(level_1,level_2, new_domain);
+	write_vtkFile("fullgrid_higherCombi", new_domain.end_point[0]-new_domain.start_point[0],new_domain.end_point[1]-new_domain.start_point[1],new_fullgrid->_Npoints[0]-1,new_fullgrid->_Npoints[1]-1,new_fullgrid->_mesh_size[0],new_fullgrid->_mesh_size[1], new_combinationSolution->_grid_combination.function_values);
+	printf ("%s \n", "after higher resolution combination!");
+
+
+
+	//plot the difference
+	Fullgrid* new_difference_grid = new Fullgrid(level_max, new_domain);
+	for ( int i = 0; i < _Npoints[0]; ++i ) {
+		for ( int j = 0; j < _Npoints[1]; ++j ) {
+			new_difference_grid->function_values[i][j]=new_combinationSolution->_grid_combination.function_values[i][j] - new_fullgrid->function_values[i][j];
+		}
+	}
+	write_vtkFile("fullgrid_higherdifference", new_domain.end_point[0]-new_domain.start_point[0],new_domain.end_point[1]-new_domain.start_point[1],new_fullgrid->_Npoints[0]-1,new_fullgrid->_Npoints[1]-1,new_fullgrid->_mesh_size[0],new_fullgrid->_mesh_size[1],new_difference_grid->function_values);
+	printf ("%s \n", "after higher resolution difference!");
+
+
 	printf ("%s \n", "everything is done!");
 	//delete _combinationSolution;
 	//delete _fullgrid;

@@ -6,19 +6,18 @@
 
 
 /* defined type of data stored in the structures*/
+/*
 #ifdef USE_SINGLE_PRECISION
 typedef float FLOAT;
 #else
 typedef double FLOAT;
 #endif
+*/
 
 #define DIMENSION 2
 
-
-class Domain{
-public:
-	/*public member variables */
-	FLOAT start_point[DIMENSION], end_point[DIMENSION];
-};
+int NumberofPoints(int level){
+	return (pow(2,level))+1;
+}
 
 #endif
