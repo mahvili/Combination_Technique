@@ -23,12 +23,19 @@ int main( int argc, char *argv[] ) {
 	}
 	AdaptiveRefinement(root);
 
+
+	FILE *f_handle=NULL;
+	f_handle = fopen("error_file.csv", "w");
+
 	WRITE_VTK=0;
-	for (MAX_ADAPTATION_LEVEL = 0; MAX_ADAPTATION_LEVEL< 5;MAX_ADAPTATION_LEVEL++)
+	int max_tree_allowed=30;
+	for (MAX_ADAPTATION_LEVEL = 0; MAX_ADAPTATION_LEVEL< max_tree_allowed;MAX_ADAPTATION_LEVEL++)
 	{
 		AdaptiveRefinement(root);
-		printf("error with highest level %i=%f\n",MAX_ADAPTATION_LEVEL,compute_error(root));
+		printf("error with highest level %i=%0.10f\n",MAX_ADAPTATION_LEVEL,compute_error(root));
+		fprintf(f_handle,"%i , %0.10f\n",MAX_ADAPTATION_LEVEL,compute_error(root));
 	}
+	fclose(f_handle);
 	printf ("%s \n", "everything is done!");
 
 	return 0;

@@ -18,7 +18,8 @@ typedef double FLOAT;
 #define DIMENSION 2
 int MAX_ADAPTATION_LEVEL;
 int WRITE_VTK; //true when we want to write vtks
-#define TRESHOLD_ERROR 0.0000001
+#define TRESHOLD_ERROR 1e-10
+
 #define USE_PREDEFINED_ERROR 0 //it should be a bool variable and 1=using predefined error and 2=computing error with the actual values of the grid
 
 int level_max[DIMENSION],level_min[DIMENSION];
@@ -38,7 +39,7 @@ Domain Original_Domain;
 
 //function for testing interpolation values
 double CaseStudies(double Z){
-	return pow( Z , 2);
+	return pow( Z , 0.8);
 }
 double TestFunction(double X,double Y){
 	return CaseStudies(X)*CaseStudies(Y);
@@ -68,10 +69,10 @@ void initialize_scheme(){
 	Original_Domain.end_point[0]=1.0;
 	Original_Domain.end_point[1]=1.0;
 
-	level_1[0]=5;
-	level_1[1]=2;
-	level_2[0]=2;
-	level_2[1]=5;
+	level_1[0]=3;
+	level_1[1]=1;
+	level_2[0]=1;
+	level_2[1]=3;
 
 	for( int i = 0; i < DIMENSION; ++i ) {
 		level_max[i]=(level_1[i]<level_2[i]) ? level_2[i] : level_1[i];

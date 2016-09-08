@@ -1,3 +1,6 @@
+#ifndef SOLUTION_H
+#define SOLUTION_H
+
 #include "QuadTree.h"
 #include "Definitions.h"
 #include "Combination.h"
@@ -214,4 +217,6 @@ double compute_error(Node* current_node){
 
 	return current_error;
 }
+
+#endif
 
