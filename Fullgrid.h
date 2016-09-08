@@ -1,8 +1,7 @@
 #ifndef FULLGRID_H
 #define FULLGRID_H
 
-#include "Domain.h"
-#include "TestFunction.h"
+#include "Definitions.h"
 /*here Full grid structure will be build*/
 
 class Fullgrid {
@@ -97,7 +96,7 @@ public:
 		delete[] position_d2;
 	}
 
-	/*evaluates function value for Gaussian case X^2*Y^2*/
+	/*evaluates function value for TestFunction defined in definitions*/
 	void evaluate(Domain _domain){
 
 		for ( int j_1 = 0; j_1 < _Npoints[0]; ++j_1 ) {
@@ -113,6 +112,8 @@ public:
 			}
 		}
 	}
+
+
 
 	/** notice: by introducing domain it may need to change accordingly by adding level of domain
 	by putting level_max it will give the index for full grid
